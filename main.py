@@ -126,6 +126,8 @@ class ClockOut(BaseModel):
 
 @app.post("/attendance/clock-in")
 def clock_in(payload: ClockIn):
+    if payload.office_code != OFFICE_CODE:
+     return {"error": "invalid_office_code", "message": "Incorrect office code. Make sure you're at the office."}
     now = datetime.now()
     today = now.date().isoformat()
     is_late = now.time() > CUTOFF_TIME
@@ -335,3 +337,10 @@ def signup_staff(payload: SignupRequest):
         "status": "active"
     }).execute()
     return response.data
+
+OFFICE_CODE = "CMRG-2607"  # change this daily, or we can automate it later
+
+class ClockIn(BaseModel):
+    staff_id: str
+    late_reason: str | None = None
+    office_code: str
