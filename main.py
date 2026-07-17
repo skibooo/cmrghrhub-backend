@@ -344,3 +344,8 @@ class ClockIn(BaseModel):
     staff_id: str
     late_reason: str | None = None
     office_code: str
+
+@app.delete("/staff/{staff_id}")
+def delete_staff(staff_id: str):
+    supabase.table("staff").delete().eq("id", staff_id).execute()
+    return {"status": "deleted"}
