@@ -18,7 +18,7 @@ CUTOFF_TIME = time(8, 30)  # 8:30 AM
 
 load_dotenv()
 
-app = FastAPI()
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -27,9 +27,10 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://cmrg-hr-hub.vercel.app/",
+        "https://cmrg-hr-hub.vercel.app",
         "http://localhost:5174",  # keep this if you still run `npm run dev` locally
     ],
+    allow_origin_regex=r"https://cmrg-hr-hub.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
