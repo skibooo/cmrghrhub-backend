@@ -295,3 +295,43 @@ def ask_ai(payload: AIRequest):
         contents=payload.prompt
     )
     return {"response": response.text}
+
+class ClaimRequest(BaseModel):
+    staff_id: str
+    pin: str
+
+class SignupRequest(BaseModel):
+    name: str
+    department_id: str
+    pin: str
+
+@app.get("/staff/search")
+def search_staff(name: str):
+    response = supabase.table("staff").select("*").ilike("name", f"%{name}%").execute()
+    return response.data
+
+@app.post("/staff/claim")
+def claim_staff(payload: ClaimRequest):
+    existing = supabase.table("staff").select("*").eq("id", payload.staff_id).execute()
+    if not existing.data:
+        return {"error": "not_found", "message": "Staff record not found."}
+    if existing.data[0]["status"] == "active":
+        return {"error": "already_claimed", "message": "This account has already been set up."}
+
+    response = supabase.table("staff").update({
+        "pin": payload.pin,
+        "status": "active"
+    }).eq("id", payload.staff_id).execute()
+    return response.data
+
+@app.post("/staff/signup")
+def signup_staff(payload: SignupRequest):
+    staff_code = str(uuid.uuid4())[:8].upper()
+    response = supabase.table("staff").insert({
+        "staff_code": staff_code,
+        "name": payload.name,
+        "department_id": payload.department_id,
+        "pin": payload.pin,
+        "status": "active"
+    }).execute()
+    return response.data
