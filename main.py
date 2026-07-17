@@ -20,9 +20,17 @@ load_dotenv()
 
 app = FastAPI()
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten this to your Vercel URL once deployed
+    allow_origins=[
+        "https://cmrg-hr-hub.vercel.app/",
+        "http://localhost:5174",  # keep this if you still run `npm run dev` locally
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
